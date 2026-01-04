@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JLPT N2 文法学習</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-purple-50 to-pink-100 min-h-screen p-2">
+    <div class="max-w-2xl mx-auto">
+        <div class="bg-white rounded-xl shadow-xl p-4 mb-2">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                    <h1 class="text-xl font-bold text-gray-800">JLPT N2 文法</h1>
+                </div>
+                <button onclick="resetApp()" class="p-1.5 hover:bg-gray-100 rounded-lg transition">
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="flex gap-2 mb-3">
+                <button id="learnBtn" onclick="changeMode('learn')" class="flex-1 py-1.5 px-3 rounded-lg text-sm font-medium transition bg-purple-600 text-white">
+                    学習モード
+                </button>
+                <button id="quizBtn" onclick="changeMode('quiz')" class="flex-1 py-1.5 px-3 rounded-lg text-sm font-medium transition bg-gray-100 text-gray-700 hover:bg-gray-200">
+                    クイズモード
+                </button>
+            </div>
+
+            <div class="mb-3">
+                <div class="flex justify-between text-xs text-gray-600 mb-1">
+                    <span id="progressText">1 / 30</span>
+                    <span id="scoreText"></span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-1.5">
+                    <div id="progressBar" class="bg-purple-600 h-1.5 rounded-full transition-all duration-300" style="width: 3.33%"></div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 mb-3 text-center">
+                <div id="questionText" class="text-xl font-bold text-purple-900 mb-3 leading-relaxed">雨が降りそうだから、傘を持って行った___。</div>
+                <div id="answerArea" class="space-y-2"></div>
+            </div>
+
+            <div id="buttonArea"></div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg p-2 text-center text-xs text-gray-600">
+            <p>全30問 | JLPT N2レベル | 中国人学習者向け</p>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { sentence: '雨が降りそうだから、傘を持って行った___。', answer: ['ほうがいい'], options: ['ほうがいい', 'ことにした', 'わけだ', 'ものだ'], meaning: '看起来要下雨，所以最好带伞去。(建议)' },
+            { sentence: '彼は日本語___、英語も話せる。', answer: ['ばかりか'], options: ['ばかりか', 'によって', 'に対して', 'について'], meaning: '他不仅会日语，还会说英语。(不仅...还...)' },
+            { sentence: '明日は試験だから、今日は勉強する___。', answer: ['しかない'], options: ['しかない', 'に決まっている', 'わけがない', 'はずがない'], meaning: '明天要考试，所以今天只能学习了。(只能...)' },
+            { sentence: '彼女は頭___、性格もいい。', answer: ['がいいうえに'], options: ['がいいうえに', 'がいいから', 'がいいので', 'がいいとき'], meaning: '她不仅聪明，而且性格也好。(不仅...而且...)' },
+            { sentence: 'この問題は難しくて、私___解けない。', answer: ['には'], options: ['には', 'でも', 'から', 'まで'], meaning: '这个问题太难了，我解不了。(对我来说)' },
+            { sentence: '努力した___、結果が出なかった。', answer: ['にもかかわらず'], options: ['にもかかわらず', 'おかげで', 'ために', 'ので'], meaning: '尽管努力了，但没有结果。(尽管...)' },
+            { sentence: '彼は医者___、患者の気持ちがわからない。', answer: ['のくせに'], options: ['のくせに', 'のために', 'によって', 'について'], meaning: '他明明是医生，却不懂患者的心情。(明明...却...)' },
+            { sentence: '学生___、勉強するのは当然だ。', answer: ['である以上'], options: ['である以上', 'であっても', 'であれば', 'でなければ'], meaning: '既然是学生，学习是理所当然的。(既然...)' },
+            { sentence: '彼は優しい___厳しい人だ。', answer: ['ようで'], options: ['ようで', 'らしくて', 'そうで', 'みたいで'], meaning: '他看起来温柔，其实是个严格的人。(看起来...)' },
+            { sentence: '雨が降る___降らない___、試合は行います。', answer: ['にしろ', 'にしろ'], options: ['にしろ', 'としても', 'ならば', 'ことに'], meaning: '无论下不下雨，比赛都会进行。(无论...还是...)' },
+            { sentence: '時間がない___、この仕事を終わらせなければならない。', answer: ['にせよ'], options: ['にせよ', 'おかげで', 'ために', 'として'], meaning: '即使没时间，也必须完成这项工作。(即使...)' },
+            { sentence: '彼は日本に10年も住んでいる___、日本語が下手だ。', answer: ['わりに'], options: ['わりに', 'おかげで', 'ために', 'ように'], meaning: '他在日本住了10年，日语却很差。(与...不相称)' },
+            { sentence: '親の___、子供のことを心配するものだ。', answer: ['立場からすれば'], options: ['立場からすれば', '気持ちによって', '考えとして', '意見について'], meaning: '站在父母的立场，担心孩子是自然的。(从...立场来说)' },
+            { sentence: '台風が近づいている___、外出は控えてください。', answer: ['ことだし'], options: ['ことだし', 'わけだから', 'はずなので', 'ものだから'], meaning: '台风正在接近，请避免外出。(因为...)' },
+            { sentence: 'いくら忙しい___、健康には気をつけるべきだ。', answer: ['といっても'], options: ['といっても', 'にしても', 'からといって', 'としても'], meaning: '无论多忙，也应该注意健康。(即使说...)' },
+            { sentence: '彼は来る___来ないか、返事がない。', answer: ['のか'], options: ['のか', 'だろうか', 'らしい', 'ようだ'], meaning: '他是来还是不来，都没有回复。(是...还是...)' },
+            { sentence: 'あの人は先生___見えないね。', answer: ['には'], options: ['には', 'として', 'によって', 'に対して'], meaning: '那个人看起来不像老师呢。(看起来不像...)' },
+            { sentence: '彼女は美しい___、心も優しい。', answer: ['ばかりでなく'], options: ['ばかりでなく', 'にすぎない', 'にちがいない', 'わけではない'], meaning: '她不仅美丽，心地也善良。(不仅...而且...)' },
+            { sentence: '日本語が上手に___、毎日練習が必要だ。', answer: ['なるには'], options: ['なるには', 'なって', 'なれば', 'なっても'], meaning: '要想日语变好，每天练习是必要的。(要想...)' },
+            { sentence: '雨が降った___、運動会は中止になった。', answer: ['せいで'], options: ['せいで', 'おかげで', 'ために', 'ように'], meaning: '因为下雨，运动会取消了。(因为...的缘故)' },
+            { sentence: '彼は約束を守らない___、信用できない。', answer: ['ばかりか'], options: ['ばかりか', 'うえに', 'ために', 'ので'], meaning: '他不仅不守约定，还不值得信任。(不仅...)' },
+            { sentence: '時間___、お金もかかる。', answer: ['がかかるうえに'], options: ['がかかるうえに', 'をかけて', 'によって', 'に対して'], meaning: '不仅花时间，还花钱。(不仅...还...)' },
+            { sentence: '病気___、仕事を休んだ。', answer: ['を理由に'], options: ['を理由に', 'によって', 'に対して', 'について'], meaning: '以生病为理由，请假了。(以...为理由)' },
+            { sentence: '彼は学生___、アルバイトもしている。', answer: ['でありながら'], options: ['でありながら', 'であっても', 'であれば', 'でなければ'], meaning: '他虽然是学生，但也在打工。(虽然...但...)' },
+            { sentence: '事故___、電車が遅れた。', answer: ['のせいで'], options: ['のせいで', 'のおかげで', 'のために', 'によって'], meaning: '因为事故，电车晚点了。(因为...的缘故)' },
+            { sentence: '彼は来る___言っていたが、来なかった。', answer: ['と'], options: ['と', 'ように', 'ために', 'ので'], meaning: '他说要来，但没来。(说...)' },
+            { sentence: '給料が安い___、この仕事は続けられない。', answer: ['ようでは'], options: ['ようでは', 'としたら', 'にしても', 'ことには'], meaning: '如果工资这么低的话，这份工作做不下去。(如果...的话)' },
+            { sentence: '彼女は歌___、踊りも上手だ。', answer: ['もうまいし'], options: ['もうまいし', 'がうまくて', 'をうまく', 'にうまい'], meaning: '她唱歌好，跳舞也好。(又...又...)' },
+            { sentence: '努力する___、成功するとは限らない。', answer: ['からといって'], options: ['からといって', 'にもかかわらず', 'おかげで', 'ために'], meaning: '不能说努力了就一定会成功。(不能因为...就...)' },
+            { sentence: '彼は子供___、大人のように話す。', answer: ['のわりに'], options: ['のわりに', 'のために', 'によって', 'について'], meaning: '他虽然是孩子，但说话像大人。(与...不相称)' }
+        ];
+
+        let currentIdx = 0;
+        let appMode = 'learn';
+        let correctCount = 0;
+        let totalCount = 0;
+        let isAnswered = false;
+        let userAnswer = null;
+        let shuffledOptions = [];
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function render() {
+            const q = questions[currentIdx];
+            document.getElementById('questionText').textContent = q.sentence;
+            document.getElementById('progressText').textContent = `${currentIdx + 1} / ${questions.length}`;
+            document.getElementById('progressBar').style.width = `${((currentIdx + 1) / questions.length) * 100}%`;
+            
+            if (appMode === 'quiz' && totalCount > 0) {
+                document.getElementById('scoreText').textContent = `正解率: ${Math.round((correctCount / totalCount) * 100)}%`;
+            } else {
+                document.getElementById('scoreText').textContent = '';
+            }
+
+            if (appMode === 'learn') {
+                document.getElementById('answerArea').innerHTML = `
+                    <div class="text-2xl text-purple-700 font-bold">答え: ${q.answer.join(' / ')}</div>
+                    <div class="text-sm text-gray-700 mt-2 leading-relaxed">${q.meaning}</div>
+                `;
+            } else if (isAnswered) {
+                document.getElementById('answerArea').innerHTML = `
+                    <div class="text-2xl text-purple-700 font-bold">答え: ${q.answer.join(' / ')}</div>
+                    <div class="text-sm text-gray-700 mt-2 leading-relaxed">${q.meaning}</div>
+                `;
+            } else {
+                document.getElementById('answerArea').innerHTML = '';
+            }
+
+            renderButtons();
+        }
+
+        function renderButtons() {
+            const q = questions[currentIdx];
+            const btnArea = document.getElementById('buttonArea');
+            
+            if (appMode === 'learn') {
+                btnArea.innerHTML = `
+                    <div class="flex gap-2">
+                        <button onclick="goPrev()" ${currentIdx === 0 ? 'disabled' : ''} 
+                            class="flex-1 py-2 px-4 text-sm bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition">
+                            前へ
+                        </button>
+                        <button onclick="goNext()" ${currentIdx === questions.length - 1 ? 'disabled' : ''} 
+                            class="flex-1 py-2 px-4 text-sm bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition">
+                            次へ
+                        </button>
+                    </div>
+                `;
+            } else {
+                if (!isAnswered) {
+                    if (shuffledOptions.length === 0) {
+                        shuffledOptions = shuffleArray(q.options);
+                    }
+                    btnArea.innerHTML = `
+                        <div class="space-y-2">
+                            <p class="text-center text-sm text-gray-600 mb-2">正しい文法を選んでください</p>
+                            <div class="grid grid-cols-1 gap-2">
+                                ${shuffledOptions.map(opt => `
+                                    <button onclick="selectAnswer('${opt.replace(/'/g, "\\'")}')" 
+                                        class="py-3 px-4 text-lg bg-purple-100 text-purple-900 rounded-lg font-bold hover:bg-purple-200 transition text-left">
+                                        ${opt}
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                } else if (q.answer.includes(userAnswer)) {
+                    btnArea.innerHTML = `
+                        <div class="text-center">
+                            <div class="text-lg font-bold text-green-600">正解!</div>
+                        </div>
+                    `;
+                } else {
+                    btnArea.innerHTML = `
+                        <div class="space-y-2">
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-red-600 mb-1">不正解</div>
+                                <div class="text-base text-gray-700 mb-2">
+                                    正解: <span class="text-purple-700 font-semibold text-xl">${q.answer.join(' / ')}</span>
+                                </div>
+                            </div>
+                            <button onclick="retry()" 
+                                class="w-full py-2 px-4 text-sm bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition">
+                                もう一度挑戦
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        function changeMode(newMode) {
+            appMode = newMode;
+            isAnswered = false;
+            userAnswer = null;
+            currentIdx = 0;
+            
+            document.getElementById('learnBtn').className = appMode === 'learn' 
+                ? 'flex-1 py-1.5 px-3 rounded-lg text-sm font-medium transition bg-purple-600 text-white'
+                : 'flex-1 py-1.5 px-3 rounded-lg text-sm font-medium transition bg-gray-100 text-gray-700 hover:bg-gray-200';
+            
+            document.getElementById('quizBtn').className = appMode === 'quiz'
+                ? 'flex-1 py-1.5 px-3 rounded-lg text-sm font-medium transition bg-purple-600 text-white'
+                : 'flex-1 py-1.5 px-3 rounded-lg text-sm font-medium transition bg-gray-100 text-gray-700 hover:bg-gray-200';
+            
+            render();
+        }
+
+        function goNext() {
+            if (currentIdx < questions.length - 1) {
+                currentIdx++;
+                isAnswered = false;
+                shuffledOptions = [];
+                render();
+            }
+        }
+
+        function goPrev() {
+            if (currentIdx > 0) {
+                currentIdx--;
+                isAnswered = false;
+                shuffledOptions = [];
+                render();
+            }
+        }
+
+        function selectAnswer(ans) {
+            userAnswer = ans;
+            const correct = questions[currentIdx].answer.includes(ans);
+            isAnswered = true;
+            render();
+            
+            if (correct) {
+                correctCount++;
+                totalCount++;
+                setTimeout(() => {
+                    if (currentIdx < questions.length - 1) {
+                        currentIdx++;
+                        isAnswered = false;
+                        userAnswer = null;
+                        shuffledOptions = [];
+                        render();
+                    }
+                }, 800);
+            } else {
+                totalCount++;
+            }
+        }
+
+        function retry() {
+            isAnswered = false;
+            userAnswer = null;
+            shuffledOptions = [];
+            render();
+        }
+
+        function resetApp() {
+            currentIdx = 0;
+            isAnswered = false;
+            correctCount = 0;
+            totalCount = 0;
+            userAnswer = null;
+            render();
+        }
+
+        render();
+    </script>
+</body>
+</html>
