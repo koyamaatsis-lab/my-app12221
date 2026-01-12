@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>JLPT N4 文法クイズ(26問)</title>
+<style>
+body{font-family:sans-serif;background:linear-gradient(135deg,#eef2ff,#e0e7ff);margin:0;padding:0;min-height:100vh;display:flex;justify-content:center;align-items:flex-start}
+.card{max-width:420px;width:100%;min-height:100vh;margin:0;background:#fff;border-radius:0;box-shadow:none;padding:25px 20px;position:relative;box-sizing:border-box}
+h1{color:#3730a3;font-size:1.8rem;margin:15px 0 25px 0;padding-right:80px}
+button{padding:16px 18px;border-radius:10px;border:1px solid #c7d2fe;background:#eef2ff;cursor:pointer;font-size:1.15rem}
+button.primary{background:#4f46e5;color:#fff;border:none;font-size:1.25rem;padding:18px;margin-top:10px}
+button.option{display:block;width:100%;margin:12px 0;text-align:center;white-space:normal;min-height:60px;font-size:1.4rem;line-height:1.5;display:flex;align-items:center;justify-content:center}
+button.option.correct{background:#dcfce7;border-color:#22c55e}
+button.option.wrong{background:#fee2e2;border-color:#ef4444}
+.progress{height:12px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-bottom:20px}
+.progress>div{height:12px;background:#4f46e5}
+.explain{background:#f8fafc;padding:20px;border-radius:10px;margin-top:20px;font-size:1.15rem;line-height:1.7}
+.back-btn{position:absolute;top:20px;right:20px;background:#4f46e5;color:#fff;border:none;padding:12px 16px;font-size:1.05rem}
+h3{font-size:1.6rem;margin:25px 0 30px 0;line-height:1.9;font-weight:bold}
+p{margin:15px 0;font-size:1.15rem}
+h2{font-size:2rem;color:#3730a3;margin:30px 0 20px 0}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>JLPT N4 ぶんぽうクイズ</h1>
+<div id="app"></div>
+</div>
+
+<script>
+const questions = [
+{q:"まいあさ6時（　）おきます。",opts:["で","に","を","が"],c:1,e:"時間には「に」を使います。"},
+{q:"いえ（　）ねこが出てきました。",opts:["の","を","に","から"],c:3,e:"でてくるばしょは「から」。"},
+{q:"えき（　）としょかんまで歩いて10分です。",opts:["から","まで","に","で"],c:0,e:"「から」ははじまりです。"},
+{q:"このハンカチ（　）だれのですか。",opts:["を","に","で","は"],c:3,e:"しゅだいは「は」。"},
+{q:"たなかさんは　じむしょ（　）います。",opts:["に","を","で","へ"],c:0,e:"います・ありますは「に」です。"},
+{q:"あには　私（　）としうえです。",opts:["より","まで","ほど","から"],c:0,e:"くらべるときは「より」。"},
+{q:"でんしゃ（　）おりるときかさをわすれました。",opts:["を","に","で","が"],c:0,e:"おりるときは「を」。"},
+{q:"としょかん（　）本をかりました。",opts:["に","へ","で","を"],c:2,e:"どうさのばしょは「で」。"},
+{q:"スーパーでパン（　）ぎゅうにゅうを買いました。",opts:["や","と","か","を"],c:1,e:"ならべるときは「と」。"},
+{q:"ちゅうごくは日本（　）大きいです。",opts:["から","まで","より","ほど"],c:2,e:"くらべるときは「より」。"},
+{q:"このビル（　）１かいにコンビニがあります。",opts:["を","が","に","の"],c:3,e:"しょぞくは「の」。"},
+{q:"姉は私（　）せが高いです。",opts:["から","まで","より","ほど"],c:2,e:"くらべるときは「より」。"},
+{q:"駅（　）着いたら電話してください。",opts:["を","が","に","で"],c:2,e:"とうちゃくてんは「に」。"},
+{q:"りんご（　）みかん、どちらが大きいですか。",opts:["や","に","か","と"],c:3,e:"くらべるときは「と」。"},
+{q:"私はコーヒー（　）が好きです。",opts:["を","に","が","で"],c:2,e:"すきは「が」。"},
+{q:"１しゅうかん（　）３かいアルバイトをしています。",opts:["を","が","に","で"],c:2,e:"ひんどは「に」。"},
+{q:"しけん（　）ごうかくしました。",opts:["を","に","が","で"],c:1,e:"ごうかくは「に」。"},
+{q:"みかん（　）りんごのほうが大きいです。",opts:["から","まで","より","ほど"],c:2,e:"くらべるときは「より」。"},
+{q:"バスの時間（　）まにあいませんでした。",opts:["を","に","で","が"],c:1,e:"まにあうは「に」。"},
+{q:"きっさてん（　）おちゃをのみました。",opts:["に","へ","で","を"],c:2,e:"たべる・のむばしょは「で」。"},
+{q:"いもうとは母（　）にています。",opts:["を","に","で","が"],c:1,e:"にているは「に」。"},
+{q:"かべ（　）カレンダーがかけてあります。",opts:["を","と","が","に"],c:3,e:"ばしょは「に」。"},
+{q:"どうぞこのイス（　）おかけください。",opts:["を","に","で","が"],c:1,e:"すわるばしょは「に」。"},
+{q:"まいにち　朝ごはん（　）食べます。",opts:["や","と","か","を"],c:3,e:"たいしょうは「を」。"},
+{q:"私は日本語（　）わかります。",opts:["を","に","で","が"],c:3,e:"わかる・できるは「が」。"},
+{q:"こんにちは。さくら大学（　）カリナです。",opts:["を","に","で","の"],c:3,e:"しょぞくは「の」。"},
+{q:"きのう（　）今日のほうがさむいです。",opts:["から","まで","より","ほど"],c:2,e:"くらべるときは「より」。"},
+{q:"日本のおさけはこめ（　）つくられています。",opts:["で","に","を","から"],c:3,e:"ざいりょうは「から」。"},
+{q:"かじ（　）いえがやけました。",opts:["に","で","を","が"],c:1,e:"げんいんは「で」。"},
+{q:"いつもあのこうえん（　）とおってかえります。",opts:["に","で","を","へ"],c:2,e:"みち・けいろは「を」。"}
+];
+
+let i=0, answers=[], locked=false, shuffledQuestions=[];
+const app=document.getElementById('app');
+
+function shuffleQuestions() {
+  shuffledQuestions = [...questions];
+  for (let i = shuffledQuestions.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledQuestions[i], shuffledQuestions[j]] = [shuffledQuestions[j], shuffledQuestions[i]];
+  }
+  
+  // 同じ答えが連続しないようにチェック
+  for (let i = 1; i < shuffledQuestions.length; i++) {
+    if (shuffledQuestions[i].c === shuffledQuestions[i-1].c) {
+      // 連続している場合、次の異なる答えと交換
+      for (let j = i + 1; j < shuffledQuestions.length; j++) {
+        if (shuffledQuestions[j].c !== shuffledQuestions[i-1].c) {
+          [shuffledQuestions[i], shuffledQuestions[j]] = [shuffledQuestions[j], shuffledQuestions[i]];
+          break;
+        }
+      }
+    }
+  }
+}
+
+function render(){
+  if(i>=shuffledQuestions.length){
+    const score=answers.filter((a,idx)=>a===shuffledQuestions[idx].c).length;
+    const rate=Math.round(score/shuffledQuestions.length*100);
+    app.innerHTML=`<h2>けっか</h2>
+    <p>せいかい：${score} / ${shuffledQuestions.length}</p>
+    <p>せいかいりつ：${rate}%</p>
+    <button class="primary" onclick="i=0;answers=[];shuffleQuestions();render()">もういちどチャレンジ</button>`;
+    return;
+  }
+  const q=shuffledQuestions[i];
+  locked=false;
+  const backBtn = `<button class="back-btn" onclick="i>0 ? i-- : i=0; render()">もどる</button>`;
+  app.innerHTML=`
+    ${backBtn}
+    <div class="progress"><div style="width:${(i+1)/shuffledQuestions.length*100}%"></div></div>
+    <p>もんだい ${i+1} / ${shuffledQuestions.length}</p>
+    <h3>${q.q}</h3>
+    ${q.opts.map((o,idx)=>`<button class="option" onclick="answer(${idx})">${o}</button>`).join('')}
+    <div id="ex"></div>
+  `;
+}
+
+function answer(idx){
+  if(locked) return;
+  locked=true;
+  answers[i]=idx;
+  const q=shuffledQuestions[i];
+  document.querySelectorAll('.option').forEach((b,j)=>{
+    if(j===q.c) b.classList.add('correct');
+    if(j===idx && idx!==q.c) b.classList.add('wrong');
+  });
+  document.getElementById('ex').innerHTML =
+    `<div class="explain">せつめい：${q.e}</div>
+     <button class="primary" onclick="i++;render()">つぎへ</button>`;
+}
+
+shuffleQuestions();
+render();
+</script>
+</body>
+</html>
